@@ -1,14 +1,28 @@
 #include <stdio.h>
+#include <stdint.h>
 
-long __attribute__((naked)) foo() {
-    __asm("mov x5, #10\n\t"
-        "mov x0, x5\n\t"
-        "ret");
+typedef struct {
+    uint64_t sp;        // Stack Pointer
+    uint64_t fp;        // Frame Pointer (x29)
+    uint64_t lr;        // Link Register (x30)
+} stack_info_t;
+
+void get_stack_info(stack_info_t* info) {
+    __asm volatile(
+        "mov x1, sp\n"          
+        "str x1, [%0, #0]\n"    // info->sp = x1 (sp)
+        "str x29, [%0, #8]\n"   // info->fp = fp
+        "str x30, [%0, #16]\n"  // info->lr = lr
+        :: "r"(info) : "x1", "memory"
+    );
 }
 
 int main() {
-    long tmp = foo();
-    printf("%ld\n", tmp);
+    stack_info_t info; 
+    get_stack_info(&info);
+    printf("SP (Stack Pointer): 0x%llx\n", info.sp);
+    printf("FP (Frame Pointer): 0x%llx\n", info.fp);
+    printf("LR (Link Register): 0x%llx\n", info.lr);
     return 0;
 }
 
