@@ -17,12 +17,16 @@ void get_stack_info(stack_info_t* info) {
     );
 }
 
-int main() {
-    stack_info_t info; 
-    get_stack_info(&info);
+void print_stack_info(stack_info_t info) {
     printf("SP (Stack Pointer): 0x%llx\n", info.sp);
     printf("FP (Frame Pointer): 0x%llx\n", info.fp);
     printf("LR (Link Register): 0x%llx\n", info.lr);
+}
+
+int main() {
+    stack_info_t info; 
+    get_stack_info(&info);
+    print_stack_info(info);
     return 0;
 }
 
